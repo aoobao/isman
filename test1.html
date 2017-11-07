@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="https://cdn.bootcss.com/jquery/2.2.1/jquery.js"></script>
+		<script src="https://cdn.bootcss.com/layer/3.0.3/layer.js"></script>
+	</head>
+
+	<body>
+		<button id='postsend'>打开窗口</button>
+	</body>
+
+	<script>
+		$("#postsend").click(function() {
+			var url = './index.html?key=xxx';		//这里填你的链接 如果不想直接传key的话要传个加密的token值,在index.html页面往服务器解析真正的用户名
+			layer.open({
+				title: '男人就坚持20秒',
+				type: 2,
+				content: url,
+				area: ['900px', '700px']
+			});
+		})
+	</script>
+
+</html>

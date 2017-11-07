@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<link href="favicon.ico" rel="icon" type="image/x-icon" />
+		<title>是男人就坚持20秒 飞机大战</title>
+		<script type="text/javascript" src='https://code.createjs.com/createjs-2015.11.26.min.js'></script>
+		<script type="text/javascript" src="js/ndgmr.Collision.sprite.js"></script>
+		<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+		<script src="https://cdn.bootcss.com/layer/3.0.3/layer.js"></script>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			#canvas {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-top: -300px;
+				margin-left: -400px;
+				background-color: #000;
+			}
+			
+			#footer {
+				position: absolute;
+				bottom: 0;
+				padding: 1em 0;
+				line-height: 1.5;
+				text-align: center;
+				color: #999;
+				background: aliceblue;
+				display: block;
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<h1 style="opacity: 0;font-family: YouYuan;">是男人就坚持20秒</h1>
+		<!--<p>你好,<label id='key'></label></p>-->
+		<button id='login'>修改名字</button>
+		<canvas id='canvas' width="800" height="600"></canvas>
+		<footer id='footer'>
+			<label>↑↓←→控制飞机方向,回车快速开始.</label>
+			<a href="http://www.fengyitong.name/" target="_blank">作者:Feng</a>
+		</footer>
+	</body>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="config.js"></script>
+	<script type="text/javascript" src="js/Preloader.js"></script>
+	<script type="text/javascript" src="js/AssetManager.js"></script>
+	<script type="text/javascript" src="js/SimpleButton.js"></script>
+	<script type="text/javascript" src="js/GameMenu.js"></script>
+	<script type="text/javascript" src="js/Game.js"></script>
+	<script type="text/javascript" src="js/GameOver.js"></script>
+	<script type="text/javascript" src="js/SpritePool.js"></script>
+	<script type="text/javascript" src="js/Bullet.js"></script>
+	<script type="text/javascript" src="js/HeroShip.js"></script>
+	<script type="text/javascript" src="js/BackgroundImage.js"></script>
+	<script type="text/javascript" src="js/TimeText.js"></script>
+	<script type="text/javascript" src="js/RankList.js"></script>
+	<script type="text/javascript" src="index.js"></script>
+
+	<script>
+		var stage;
+		var canvas;
+		var spritesheet;
+		var screen_width;
+		var screen_height;
+		var base64_image;
+		var user_key;
+		init();
+		$("#login").click(function() {
+			layer.prompt({
+				title: '输入用户名',
+				maxlength: 20
+			}, function(value, index, elem) {
+				layer.close(index);
+				var param =$.param({
+					key: value
+				});
+				var str = '/index.html?' + param;
+				var url = window.location.href.replace(/index\.html.+$/,"") + str;
+				
+				window.location.href = url;
+			},function(){
+				alert('aaa');
+			});
+		})
+
+		function init() {
+			var key = Utils.getQueryString("key");
+			if(!key) key = "Guest " + Math.getRandomNumber(1, 9999);
+			user_key = key;
+//			$("#key").text(key);
+
+			window.game.main = new game.Main("canvas");
+		}
+
+		function submitCallback(opts, callback) {
+			var key = user_key;
+			var flg = false;
+			var url = config.webApi + "api/RankList/AddRankingList";
+			var index = layer.load(0, {
+				shade: false
+			})
+			$.ajax({
+				type: "post",
+				url: url,
+				data: {
+					key: key,
+					second: opts.usetime,
+					base64: opts.base64_image
+				},
+				async: true,
+				success: function(data) {
+					if(data.success == 0) {
+						flg = true;
+					} else {
+						layer.msg(data.msg);
+					}
+				},
+				error: function(x, t, e) {
+					console.log(x);
+					layer.msg("提交失败");
+				},
+				complete: function() {
+					if(flg) {
+						callback({
+							success: 200,
+							msg: 'OK'
+						});
+					} else {
+						callback({
+							success: 503,
+							msg: '提交失败'
+						})
+					}
+					layer.close(index);
+				}
+			});
+		}
+	</script>
+
+</html>
